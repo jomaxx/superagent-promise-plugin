@@ -1,6 +1,6 @@
 {
   "name": "superagent-promise-plugin",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Plugin for visionmedia/superagent. Shims req.end to return a promise when executed with no callback.",
   "main": "index.js",
   "scripts": {
