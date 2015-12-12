@@ -1,24 +1,29 @@
 # superagent-promise
-Plugin for visionmedia/superagent that adds a ```promise()``` method to the request object to be used instead of the ```end(callback)``` method
+Plugin for [`visionmedia/superagent`](https://github.com/visionmedia/superagent). Shims `req.end` to return a promise when executed with no callback.
 
 ## Install
 ```
-npm install superagent-promise-plugin
+npm install superagent superagent-promise-plugin --save
 ```
 
 ## How to use
-```javascript
-var request = require('superagent');
-var superagentPromise = require('superagent-promise-plugin');
+Requires ES6 Promises. Polyfill with [`es6-promise`](https://github.com/jakearchibald/es6-promise) or equivalent.
 
-request.get('/url')
-.use(superagentPromise)
-.promise() // sends request and returns a Q promise
-.then(function (res) {
-  // success
-}, function (err) {
-  // error
-});
+```javascript
+require('es6-promise').polyfill();
+var request = require('superagent');
+var superagentPromisePlugin = require('superagent-promise-plugin');
+var req = request.get('/end/point');
+
+req
+  .use(superagentPromisePlugin)
+  .end() // no callback returns a promise
+  .then(function (res) {
+    // success
+  })
+  .catch(function (err) {
+    // error
+  });
 ```
 
 ## License
