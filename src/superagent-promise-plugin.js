@@ -4,12 +4,13 @@
  * @return {Object} req
  */
 function superagentPromisePlugin(req) {
+  var _Promise = superagentPromisePlugin.Promise || Promise;
   var end = req.end;
 
   req.end = function () {
     if (arguments.length) return end.apply(req, arguments);
 
-    return new Promise(function (resolve, reject) {
+    return new _Promise(function (resolve, reject) {
       end.call(req, function (err, res) {
         err = err || res.error;
         if (err) reject(err);
@@ -20,5 +21,10 @@ function superagentPromisePlugin(req) {
 
   return req;
 }
+
+/**
+ * Override with a Promise implementation
+ */
+superagentPromisePlugin.Promise = null;
 
 module.exports = superagentPromisePlugin;

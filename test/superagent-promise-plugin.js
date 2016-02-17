@@ -48,4 +48,20 @@ describe('superagentPromisePlugin', function () {
         done();
       });
   });
+
+  it('should set Promise', function (done) {
+    var req = request.get('/success');
+
+    superagentPromisePlugin.Promise = function (fn) {
+      fn(function (res) {
+        should(res.status).equal(200);
+        superagentPromisePlugin.Promise = null;
+        done();
+      });
+    };
+
+    req.use(superagentPromisePlugin);
+
+    should(req.end() instanceof superagentPromisePlugin.Promise).equal(true);
+  });
 });
