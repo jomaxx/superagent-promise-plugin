@@ -1,5 +1,5 @@
 # superagent-promise
-Plugin for [`visionmedia/superagent`](https://github.com/visionmedia/superagent). Shims `req.end` to return a promise when executed with no callback.
+Plugin for [`visionmedia/superagent`](https://github.com/visionmedia/superagent). Use `req.then` or `req['catch']` to execute your request and handle via promises.
 
 ## Install
 ```
@@ -19,7 +19,6 @@ var req = request.get('/end/point');
 
 req
   .use(superagentPromisePlugin)
-  .end() // no callback returns a promise
   .then(function (res) {
     // success
   })
@@ -38,10 +37,6 @@ superagentPromisePlugin.Promise = require('es6-promise');
 
 req
   .use(superagentPromisePlugin)
-  .end() // no callback returns a promise
-  .then(function (res) {
-    // success
-  })
   .catch(function (err) {
     // error
   });
