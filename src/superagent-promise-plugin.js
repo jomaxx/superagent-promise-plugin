@@ -21,7 +21,7 @@ function _catch() {
 }
 
 /**
- * Shims req.end to return a promise when executed with no callback.
+ * Adds req.then and req.catch methods
  * @param {Object} req
  * @return {Object} req
  */
@@ -30,6 +30,17 @@ function superagentPromisePlugin(req) {
   req['catch'] = _catch;
   return req;
 }
+
+/**
+ * Patches superagent so that every request has req.then and req.catch methods
+ * @param {Object} superagent
+ * @return {Object} superagent
+ */
+superagentPromisePlugin.patch = function patch(superagent) {
+  superagent.Request.prototype.then = then;
+  superagent.Request.prototype['catch'] = _catch;
+  return superagent;
+};
 
 /**
  * Override with a Promise implementation
