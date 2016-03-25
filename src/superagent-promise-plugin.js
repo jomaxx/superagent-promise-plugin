@@ -1,24 +1,33 @@
+function endPromise(req) {
+  var _Promise = superagentPromisePlugin.Promise || Promise;
+
+  return new _Promise(function (resolve, reject) {
+    req.end(function (err, res) {
+      err = err || res.error;
+      if (err) reject(err);
+      else resolve(res);
+    });
+  });
+}
+
+function then() {
+  var promise = endPromise(this);
+  return promise.then.apply(promise, arguments);
+}
+
+function _catch() {
+  var promise = endPromise(this);
+  return promise.catch.apply(promise, arguments);
+}
+
 /**
  * Shims req.end to return a promise when executed with no callback.
  * @param {Object} req
  * @return {Object} req
  */
 function superagentPromisePlugin(req) {
-  var _Promise = superagentPromisePlugin.Promise || Promise;
-  var end = req.end;
-
-  req.end = function () {
-    if (arguments.length) return end.apply(req, arguments);
-
-    return new _Promise(function (resolve, reject) {
-      end.call(req, function (err, res) {
-        err = err || res.error;
-        if (err) reject(err);
-        else resolve(res);
-      });
-    });
-  };
-
+  req.then = then;
+  req['catch'] = _catch;
   return req;
 }
 

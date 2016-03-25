@@ -14,54 +14,54 @@ app
 });
 
 describe('superagentPromisePlugin', function () {
+  function createReq(route) {
+    var req = request.get(route);
+    req.use(superagentPromisePlugin);
+    return req;
+  }
 
   it('should use callbacks', function () {
-    var req = request.get('/success');
-    req.use(superagentPromisePlugin);
+    var req = createReq('/success');
     should(req.end(function () {})).equal(req);
   });
 
   it('should succeed', function (done) {
-    var req = request.get('/success');
-
-    req = superagentPromisePlugin(req);
-
-    req.end()
+    createReq('/success')
       .then(function (res) {
-        should(res.status).equal(200);
+        should(res.status).equal(200)
         done();
       })
       .catch(done);
   });
 
   it('should fail', function (done) {
-    var req = request.get('/not/found');
+    function success() {
+      throw new Error('promise should not be successful');
+    }
 
-    req.use(superagentPromisePlugin);
+    function fail(res) {
+      should(res.status).equal(404);
+    }
 
-    req.end()
+    Promise.all([
+      createReq('/not/found').then(success, fail),
+      createReq('/not/found').catch(fail),
+    ])
       .then(function () {
-        done(new Error('promise should not be successful'));
-      })
-      .catch(function (err) {
-        should(err.status).equal(404);
         done();
-      });
+      })
+      .catch(done);
   });
 
   it('should set Promise', function (done) {
-    var req = request.get('/success');
-
-    superagentPromisePlugin.Promise = function (fn) {
+    var Promise = superagentPromisePlugin.Promise = function (fn) {
       fn(function (res) {
         should(res.status).equal(200);
-        superagentPromisePlugin.Promise = null;
         done();
       });
     };
 
-    req.use(superagentPromisePlugin);
-
-    should(req.end() instanceof superagentPromisePlugin.Promise).equal(true);
+    Promise.prototype.then = function () {};
+    createReq('/success').then();
   });
 });
