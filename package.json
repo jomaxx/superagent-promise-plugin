@@ -1,6 +1,6 @@
 {
   "name": "superagent-promise-plugin",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Plugin for visionmedia/superagent. Use req.then or req['catch'] to execute your request and handle via promises.",
   "main": "index.js",
   "scripts": {
@@ -25,10 +25,11 @@
   "homepage": "https://github.com/jomaxx/superagent-promise-plugin",
   "dependencies": {},
   "devDependencies": {
-    "es6-promise": "^3.0.2",
-    "express": "^4.13.3",
-    "mocha": "^2.3.4",
-    "should": "^8.0.1",
-    "supertest": "^1.1.0"
+    "es6-promise": "^3.1.2",
+    "express": "^4.13.4",
+    "mocha": "^2.4.5",
+    "should": "^8.3.0",
+    "superagent": "^1.8.3",
+    "supertest": "^1.2.0"
   }
 }

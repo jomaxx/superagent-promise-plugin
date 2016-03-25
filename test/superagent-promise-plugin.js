@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 require('es6-promise').polyfill();
 var app = require('express')();
+var superagent = require('superagent');
 var request = require('supertest')(app);
 var superagentPromisePlugin = require('../index');
 var should = require('should');
@@ -20,15 +21,14 @@ describe('superagentPromisePlugin', function () {
     return req;
   }
 
-  it('should use callbacks', function () {
-    var req = createReq('/success');
-    should(req.end(function () {})).equal(req);
+  beforeEach(function () {
+    superagentPromisePlugin.Promise = null;
   });
 
   it('should succeed', function (done) {
     createReq('/success')
       .then(function (res) {
-        should(res.status).equal(200)
+        should(res.status).equal(200);
         done();
       })
       .catch(done);
@@ -39,8 +39,8 @@ describe('superagentPromisePlugin', function () {
       throw new Error('promise should not be successful');
     }
 
-    function fail(res) {
-      should(res.status).equal(404);
+    function fail(err) {
+      should(err.status).equal(404);
     }
 
     Promise.all([
@@ -63,5 +63,22 @@ describe('superagentPromisePlugin', function () {
 
     Promise.prototype.then = function () {};
     createReq('/success').then();
+  });
+
+  it('should patch superagent', function (done) {
+    superagent.Request.prototype.end = function (fn) {
+      fn(null, {
+        status: 200
+      });
+    };
+
+    should(superagentPromisePlugin.patch(superagent)).equal(superagent);
+
+    superagent.get('/success')
+      .catch(function () {})
+      .then(function (res) {
+        should(res.status).equal(200);
+        done();
+      });
   });
 });

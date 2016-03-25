@@ -9,15 +9,13 @@ npm install superagent superagent-promise-plugin --save
 ## How to use
 Requires ES6 Promises. Polyfill or set `superagentPromisePlugin.Promise` with [`es6-promise`](https://github.com/jakearchibald/es6-promise) or equivalent.
 
-### Example 1
 ```js
-require('es6-promise').polyfill();
-
 var request = require('superagent');
 var superagentPromisePlugin = require('superagent-promise-plugin');
-var req = request.get('/end/point');
 
-req
+superagentPromisePlugin.Promise = require('es6-promise');
+
+request.get('/end/point')
   .use(superagentPromisePlugin)
   .then(function (res) {
     // success
@@ -27,16 +25,18 @@ req
   });
 ```
 
-### Example 2
+## Patching superagent
+Patch the `superagent` module so that every request has `req.then` and `req['catch']` methods.
+
 ```js
-var request = require('superagent');
+require('es6-promise').polyfill();
 var superagentPromisePlugin = require('superagent-promise-plugin');
-var req = request.get('/end/point');
+var request = superagentPromisePlugin.patch(require('superagent'));
 
-superagentPromisePlugin.Promise = require('es6-promise');
-
-req
-  .use(superagentPromisePlugin)
+request.get('/end/point')
+  .then(function (res) {
+    // success
+  })
   .catch(function (err) {
     // error
   });
