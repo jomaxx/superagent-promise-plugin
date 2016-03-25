@@ -1,8 +1,3 @@
-var deprecated = require('./deprecate')(
-  function () {},
-  'superagentPromisePlugin: Use req.then or req[\'catch\'] instead'
-);
-
 function endPromise(req) {
   var _Promise = superagentPromisePlugin.Promise || Promise;
 
@@ -31,17 +26,8 @@ function _catch() {
  * @return {Object} req
  */
 function superagentPromisePlugin(req) {
-  var oldEnd = req.end;
-
-  req.end = function end() {
-    if (arguments.length) return oldEnd.apply(this, arguments);
-    deprecated();
-    return endPromise(this);
-  };
-
   req.then = then;
   req['catch'] = _catch;
-
   return req;
 }
 

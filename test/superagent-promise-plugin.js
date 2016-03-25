@@ -26,15 +26,9 @@ describe('superagentPromisePlugin', function () {
   });
 
   it('should succeed', function (done) {
-    function success(res) {
-      should(res.status).equal(200);
-    }
-
-    Promise.all([
-      createReq('/success').then(success),
-      createReq('/success').end().then(success)
-    ])
-      .then(function () {
+    createReq('/success')
+      .then(function (res) {
+        should(res.status).equal(200)
         done();
       })
       .catch(done);
@@ -52,8 +46,6 @@ describe('superagentPromisePlugin', function () {
     Promise.all([
       createReq('/not/found').then(success, fail),
       createReq('/not/found').catch(fail),
-      createReq('/not/found').end().then(success, fail),
-      createReq('/not/found').end().catch(fail)
     ])
       .then(function () {
         done();
@@ -61,11 +53,15 @@ describe('superagentPromisePlugin', function () {
       .catch(done);
   });
 
-  it('should set and unset Promise', function (done) {
-    var Promise = superagentPromisePlugin.Promise = function () {};
-    should(createReq('/success').end() instanceof Promise).equal(true);
-    superagentPromisePlugin.Promise = null;
-    should(createReq('/success').end() instanceof Promise).equal(false);
-    done();
+  it('should set Promise', function (done) {
+    var Promise = superagentPromisePlugin.Promise = function (fn) {
+      fn(function (res) {
+        should(res.status).equal(200);
+        done();
+      });
+    };
+
+    Promise.prototype.then = function () {};
+    createReq('/success').then();
   });
 });
