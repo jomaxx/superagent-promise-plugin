@@ -3,8 +3,7 @@ function endPromise(req) {
 
   return new _Promise(function (resolve, reject) {
     req.end(function (err, res) {
-      err = err || res.error;
-      if (err) reject(err);
+      if (err || res.error) reject(res);
       else resolve(res);
     });
   });
