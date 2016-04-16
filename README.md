@@ -22,6 +22,7 @@ request.get('/end/point')
   })
   .catch(function (err) {
     // error
+    var res = err.response; // the full response object
   });
 ```
 
