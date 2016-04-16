@@ -41,6 +41,7 @@ describe('superagentPromisePlugin', function () {
 
     function fail(err) {
       should(err.status).equal(404);
+      should(err.response).be.type('object');
     }
 
     Promise.all([
