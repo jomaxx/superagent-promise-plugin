@@ -4,8 +4,11 @@ function endPromise(req) {
   return new _Promise(function (resolve, reject) {
     req.end(function (err, res) {
       err = err || res.error;
-      if (err) reject(err);
-      else resolve(res);
+      if (err) {
+        err.response = res;
+        reject(err);
+      } else 
+        resolve(res);
     });
   });
 }
